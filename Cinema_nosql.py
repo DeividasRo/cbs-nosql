@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 
 r = redis.Redis(host='localhost', port=6379)
-r.flushdb()
+
 
 def add_screening(session_id, session_date, session_time, movie_title):
     if r.exists(session_id):
