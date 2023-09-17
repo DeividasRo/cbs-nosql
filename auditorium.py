@@ -6,6 +6,7 @@ def add_auditorium(row_count, seats_per_row):
         'row_count': row_count,
         'seats_per_row': seats_per_row,
     }
+
     auditorium_id = "a" + str(r.scard("auditoriums"))
     r.hset(auditorium_id, mapping=auditorium_data)
     r.sadd("auditoriums",  auditorium_id)

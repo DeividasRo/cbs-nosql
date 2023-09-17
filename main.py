@@ -1,36 +1,110 @@
 from auditorium import *
-from screening import *
+from session import *
+from booking import *
+
+
+def display_seats(session_id):
+    session_data = get_session(session_id)
+    if session_data is None:
+        print("This session does not exist.")
+        return
+    auditorium = get_auditorium(session_data['auditorium'])
+    seats_per_row = int(auditorium['seats_per_row'])
+    total_seats = int(auditorium['row_count']) * seats_per_row
+
+    reserved_seats = get_reserved_seats(session_id)
+
+    print('     ', end=' ')
+    for col_num in range(1, seats_per_row + 1):
+        print('{:2d}'.format(col_num), end=' ')
+    print()
+
+    for seat_num in range(1, total_seats + 1):
+        if seat_num % seats_per_row == 1:
+            row_letter = chr(65 + (seat_num - 1) // seats_per_row)
+            print(f'Row {row_letter}:', end=' ')
+
+        if str(seat_num) in reserved_seats:
+            print('X ', end=' ')
+        else:
+            print('- ', end=' ')
+
+        if seat_num % seats_per_row == 0:
+            print()
+    print()
+
+
+def display_auditoriums():
+    print("ALL EXISTING AUDITORIUMS")
+    auditoriums = list(r.smembers("auditoriums"))
+    for auditorium in auditoriums:
+        auditorium_details = get_auditorium(auditorium)
+        print(f"id: {auditorium.decode('utf-8')}")
+        if auditorium_details:
+            for key, value in auditorium_details.items():
+                print(f"{key}: {value}")
+            print()
+
+
+def display_sessions():
+    print("ALL EXISTING SESSIONS")
+    sessions = list(r.smembers("sessions"))
+    for session in sessions:
+        session_details = get_session(session)
+        print(f"id: {session.decode('utf-8')}")
+        if session_details:
+            for key, value in session_details.items():
+                print(f"{key}: {value}")
+            print()
+
+
+def display_tickets():
+    print("ALL PURCHASED TICKETS")
+    tickets = list(r.smembers("tickets"))
+    for ticket in tickets:
+        ticket_details = get_ticket(ticket)
+        print(f"id: {ticket.decode('utf-8')}")
+        if ticket_details:
+            for key, value in ticket_details.items():
+                print(f"{key}: {value}")
+            print()
 
 
 def main():
     print("Welcome to the Cinema Booking System!")
-    sessions = [
-        {"session_id": "session1", "session_date": "2023-09-18",
-            "session_time": "15:00", "movie_title": "Movie Title 1", "auditorium": "a1"},
-        {"session_id": "session2", "session_date": "2023-09-19",
-            "session_time": "18:00", "movie_title": "Movie Title 2", "auditorium": "a0"},
-    ]
-    auditoriums = [
-        {"row_count": 10, "seats_per_row": 20}
-    ]
 
-    for auditorium in auditoriums:
-        add_auditorium(auditorium["row_count"], auditorium["seats_per_row"])
-
-    for session in sessions:
-        add_screening(session["session_id"], session["session_date"],
-                      session["session_time"], session["movie_title"], session["auditorium"])
-
-   # for session in sessions:
-   #    screening_details = get_screening(session["session_id"])
-   #    if screening_details:
-   #        print()
-   #        for key, value in screening_details.items():
-   #            print(f"{key}: {value}")
+    while True:
+        print("\nSelect an action:")
+        print("1 - Add an auditorium")
+        print("2 - Add a session")
+        print("3 - Buy a ticket")
+        print("4 - Display all auditoriums")
+        print("5 - Display all sessions")
+        print("6 - Display all tickets")
+        print("7 - Display all seats of a session")
+        x = input()
+        if x == '1':
+            add_auditorium(input("Enter row count: "),
+                           input("Enter seat per row: "))
+        elif x == '2':
+            add_session(input("Enter session date (YYYY-MM-DD): "),
+                        input("Enter session time (HH:MM): "),
+                        input("Enter movie title: "),
+                        input("Enter auditorium: "))
+        elif x == '3':
+            buy_ticket(input("Enter session id: "),
+                       input("Enter seat number: "))
+        elif x == '4':
+            display_auditoriums()
+        elif x == '5':
+            display_sessions()
+        elif x == '6':
+            display_tickets()
+        elif x == '7':
+            display_seats(input("Enter session id: "))
+        elif x.lower() == 'q':
+            break
 
 
 if __name__ == "__main__":
     main()
-
-
-# https://redis.io/docs/clients/python/
