@@ -6,7 +6,7 @@ from booking import *
 def display_seats(session_id):
     session_data = get_session(session_id)
     if session_data is None:
-        print("This session does not exist.")
+        print("\nThis session does not exist.")
         return
     auditorium = get_auditorium(session_data['auditorium'])
     seats_per_row = int(auditorium['seats_per_row'])
@@ -14,7 +14,7 @@ def display_seats(session_id):
 
     reserved_seats = get_reserved_seats(session_id)
 
-    print('     ', end=' ')
+    print('\n     ', end=' ')
     for col_num in range(1, seats_per_row + 1):
         print('{:2d}'.format(col_num), end=' ')
     print()

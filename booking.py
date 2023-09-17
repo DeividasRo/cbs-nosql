@@ -20,23 +20,27 @@ def buy_ticket(session_id, seat_id):
         print(f"\nSeat {seat_id} is already reserved.")
         return
 
-    r.watch(f"{session_id}:reserved_seats")
-    p = r.pipeline()
+    try:
+        p = r.pipeline()
+        p.watch(f"{session_id}:reserved_seats")
+        p.multi()
+        #time.sleep(2)
 
-    # time.sleep(2)
+        ticket_data = {
+            'session_id': session_id,
+            'seat_id': seat_id
+        }
 
-    ticket_data = {
-        'session_id': session_id,
-        'seat_id': seat_id
-    }
+        ticket_id = "ticket" + str(r.scard("tickets"))
 
-    ticket_id = "ticket" + str(p.scard("tickets"))
+        p.hset(ticket_id, mapping=ticket_data)
+        p.sadd("tickets",  ticket_id)
 
-    p.hset(ticket_id, mapping=ticket_data)
-    p.sadd(f"{session_id}:reserved_seats", seat_id)
-    p.sadd("tickets",  ticket_id)
-
-    p.execute()
+        p.execute()
+        r.sadd(f"{session_id}:reserved_seats", seat_id)
+    except redis.WatchError:
+        print("Retry the transaction please")
+        return
 
 
 def get_ticket(ticket_id):
