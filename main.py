@@ -15,6 +15,9 @@ def display_seats(session_id):
     reserved_seats = get_reserved_seats(session_id)
 
     print('\n     ', end=' ')
+    print('Reserved seats are marked with X symbol')
+
+    print('\n     ', end=' ')
     for col_num in range(1, seats_per_row + 1):
         print('{:2d}'.format(col_num), end=' ')
     print()
@@ -92,7 +95,9 @@ def main():
                         input("Enter movie title: "),
                         input("Enter auditorium: "))
         elif x == '3':
-            buy_ticket(input("Enter session id: "),
+            s_id = input("Enter session id: ")
+            display_seats(s_id)
+            buy_ticket(s_id,
                        input("Enter seat number: "))
         elif x == '4':
             display_auditoriums()

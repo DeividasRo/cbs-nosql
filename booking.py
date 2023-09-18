@@ -13,32 +13,29 @@ def buy_ticket(session_id, seat_id):
         print("\nThis session does not exist.")
         return
 
-    row_letter = seat_id[0]
-    seat_num = int(seat_id[1:])
     auditorium = get_auditorium(session["auditorium"])
 
-    if (seat_num < 1) or (seat_num > int(auditorium['row_count'])):
+    if (int(seat_id[1:]) < 1) or (int(seat_id[1:]) > int(auditorium['row_count'])):
         print(f"\nSeat {seat_id} does not exist.")
         return
 
-    seat_number = (ord(row_letter) - 65) * int(auditorium['seats_per_row']) + seat_num
+    # Seat number from LN format
+    seat_number = (ord(seat_id[0]) - 65) * int(auditorium['seats_per_row']) + int(seat_id[1:])
 
     if seat_number > int(auditorium['seats_per_row'])*int(auditorium['row_count']):
         print(f"\nSeat {seat_id} does not exist.")
         return
 
-
-    if seat_id in get_reserved_seats(session_id):
+    if str(seat_number) in get_reserved_seats(session_id):
         print(f"\nSeat {seat_id} is already reserved.")
         return
     
-
-
+    
     try:
         p = r.pipeline()
         p.watch(f"{session_id}:reserved_seats")
         p.multi()
-        time.sleep(2)
+        #time.sleep(2)
 
         ticket_data = {
             'session_id': session_id,
