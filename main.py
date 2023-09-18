@@ -87,8 +87,8 @@ def main():
         print("7 - Display all seats of a session")
         x = input()
         if x == '1':
-            add_auditorium(input("Enter row count: "),
-                           input("Enter seat per row: "))
+            add_auditorium(input("Enter row count (1-20): "),
+                           input("Enter seat per row (1-99): "))
         elif x == '2':
             add_session(input("Enter session date (YYYY-MM-DD): "),
                         input("Enter session time (HH:MM): "),

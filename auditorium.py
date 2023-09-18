@@ -6,7 +6,7 @@ def add_auditorium(row_count, seats_per_row):
         print("\nInvalid input.")
         return
 
-    if row_count > 20 or seats_per_row > 99:
+    if int(row_count) > 20 or int(seats_per_row) > 99:
         print("\nToo many seats.")
         return
     

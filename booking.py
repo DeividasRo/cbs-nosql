@@ -35,7 +35,7 @@ def buy_ticket(session_id, seat_id):
         p = r.pipeline()
         p.watch(f"{session_id}:reserved_seats")
         p.multi()
-        #time.sleep(2)
+        time.sleep(3)
 
         ticket_data = {
             'session_id': session_id,
@@ -48,8 +48,10 @@ def buy_ticket(session_id, seat_id):
         p.sadd("tickets",  ticket_id)
         p.sadd(f"{session_id}:reserved_seats", seat_number)
         p.execute()
+        print("\nTicket purchased successfully!")
     except redis.WatchError:
-        print("Transaction failed, please try again.")
+        print("Transaction failed, trying again...")
+        buy_ticket(session_id, seat_id)
         return
 
 
