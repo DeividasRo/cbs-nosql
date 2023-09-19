@@ -1,6 +1,4 @@
-# cbs-nosql
-
-Cinema Booking System with Redis
+# Cinema Booking System with Redis
 
 ## Authors
 ISI 3 kursas 2 grupė:

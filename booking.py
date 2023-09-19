@@ -26,31 +26,26 @@ def buy_ticket(session_id, seat_id):
         print(f"\nSeat {seat_id} does not exist.")
         return
 
-    if str(seat_number) in get_reserved_seats(session_id):
-        print(f"\nSeat {seat_id} is already reserved.")
-        return
-    
-    
+    ticket_data = {
+        'session_id': session_id,
+        'seat_id': seat_id
+    }
+    ticket_id = "ticket" + str(r.scard("tickets"))
+
     try:
         p = r.pipeline()
         p.watch(f"{session_id}:reserved_seats")
         p.multi()
-        time.sleep(3)
-
-        ticket_data = {
-            'session_id': session_id,
-            'seat_id': seat_id
-        }
-
-        ticket_id = "ticket" + str(r.scard("tickets"))
-
+        p.sadd(f"{session_id}:reserved_seats", seat_number)
         p.hset(ticket_id, mapping=ticket_data)
         p.sadd("tickets",  ticket_id)
-        p.sadd(f"{session_id}:reserved_seats", seat_number)
+        if str(seat_number) in get_reserved_seats(session_id):
+            print(f"\nSeat {seat_id} is already reserved.")
+            return
         p.execute()
         print("\nTicket purchased successfully!")
     except redis.WatchError:
-        print("Transaction failed, trying again...")
+        #print("\nTransaction failed, trying again...")
         buy_ticket(session_id, seat_id)
         return
 

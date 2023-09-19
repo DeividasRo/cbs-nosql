@@ -1,7 +1,7 @@
 from auditorium import *
 from session import *
 from booking import *
-
+import concurrent.futures
 
 def display_seats(session_id):
     session_data = get_session(session_id)
@@ -72,6 +72,12 @@ def display_tickets():
                 print(f"{key}: {value}")
             print()
 
+def buy_tickets_concurrently(session_id, seat_id):
+    with concurrent.futures.ThreadPoolExecutor(max_workers=64) as executor:
+        futures = [executor.submit(buy_ticket, session_id, seat_id) for _ in range(0, 1000)]
+        concurrent.futures.wait(futures)
+        executor.shutdown()
+
 
 def main():
     print("Welcome to the Cinema Booking System!")
@@ -85,7 +91,8 @@ def main():
         print("5 - Display all sessions")
         print("6 - Display all tickets")
         print("7 - Display all seats of a session")
-        x = input()
+        print("8 - Buy 1000 tickets for the same seat concurrently")
+        x = input("> ")
         if x == '1':
             add_auditorium(input("Enter row count (1-20): "),
                            input("Enter seat per row (1-99): "))
@@ -107,6 +114,9 @@ def main():
             display_tickets()
         elif x == '7':
             display_seats(input("Enter session id: "))
+        elif x == '8':
+            buy_tickets_concurrently(input("Enter session id: "),
+                                    input("Enter seat id: "))
         elif x.lower() == 'q':
             break
 
